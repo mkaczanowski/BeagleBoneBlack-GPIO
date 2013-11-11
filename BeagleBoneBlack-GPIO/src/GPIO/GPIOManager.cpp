@@ -69,7 +69,7 @@ int GPIOManager::exportPin(unsigned int gpio) {
   std::ofstream stream(SYSFS_GPIO_DIR "/export");
 
   if (stream < 0) {
-    fprintf(stderr, "OPERATION FAILED: Unable to export GPIO no. %d key: %s",
+    fprintf(stderr, "OPERATION FAILED: Unable to export GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -89,7 +89,7 @@ int GPIOManager::unexportPin(unsigned int gpio) {
   std::ofstream stream(SYSFS_GPIO_DIR "/unexport");
 
   if (stream < 0) {
-    fprintf(stderr, "OPERATION FAILED: Unable to unexport GPIO no. %d key: %s",
+    fprintf(stderr, "OPERATION FAILED: Unable to unexport GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -110,12 +110,12 @@ int GPIOManager::unexportPin(unsigned int gpio) {
  */
 int GPIOManager::setDirection(unsigned int gpio, DIRECTION direction) {
   char path[50];
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/direction", gpio);
 
   std::ofstream stream(path);
   if (stream < 0) {
     fprintf(stderr,
-            "OPERATION FAILED: Unable to set direction GPIO no. %d key: %s",
+            "OPERATION FAILED: Unable to set direction GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -136,12 +136,12 @@ int GPIOManager::setDirection(unsigned int gpio, DIRECTION direction) {
  */
 int GPIOManager::getDirection(unsigned int gpio) {
   char path[50], direction;
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/direction", gpio);
 
   std::ifstream stream(path);
   if (stream < 0) {
     fprintf(stderr,
-            "OPERATION FAILED: Unable to get direction GPIO no. %d key: %s",
+            "OPERATION FAILED: Unable to get direction GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -158,11 +158,11 @@ int GPIOManager::getDirection(unsigned int gpio) {
  */
 int GPIOManager::setValue(unsigned int gpio, PIN_VALUE value) {
   char path[50];
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
   std::ofstream stream(path);
   if (stream < 0) {
-    fprintf(stderr, "OPERATION FAILED: Unable to set value GPIO no. %d key: %s",
+    fprintf(stderr, "OPERATION FAILED: Unable to set value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -178,11 +178,11 @@ int GPIOManager::setValue(unsigned int gpio, PIN_VALUE value) {
  */
 int GPIOManager::getValue(unsigned int gpio) {
   char path[50], value;
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
   std::ifstream stream(path);
   if (stream < 0) {
-    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s",
+    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -218,11 +218,11 @@ int GPIOManager::setEdge(unsigned int gpio, EDGE_VALUE value) {
  */
 int GPIOManager::getEdge(unsigned int gpio) {
   char path[50], value[7];
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/edge", gpio);
 
   std::ifstream stream(path);
   if (stream < 0) {
-    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s",
+    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
   }
@@ -238,10 +238,10 @@ int GPIOManager::getEdge(unsigned int gpio) {
  */
 int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value) {
   char path[50], buf;
-  int efd, fd, n;
+  int efd, fd;
   struct epoll_event events, ev;
 
-  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
   this->exportPin(gpio);
   this->setDirection(gpio, INPUT);
@@ -261,7 +261,7 @@ int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value) {
 
   // Ignore the first read (initial value)
   for (int i = 0; i < 2; i++) {
-    if ((n = epoll_wait(efd, &events, 1, -1)) == -1) {
+    if ((epoll_wait(efd, &events, 1, -1)) == -1) {
       return -1;
     }
   }
