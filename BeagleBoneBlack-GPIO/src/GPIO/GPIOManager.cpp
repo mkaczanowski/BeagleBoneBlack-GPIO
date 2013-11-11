@@ -19,19 +19,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
-*/
+ */
 
-#include "GPIOManager.h"
-#include "GPIOConst.h"
+#include "./GPIOManager.h"
 
-#include <fstream>
-#include <sys/epoll.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/epoll.h>
+#include <fstream>
 #include <algorithm>
 
+#include "./GPIOConst.h"
+
 namespace GPIO {
-using namespace std;
 
 /*
  * GPIOManager instance
@@ -41,243 +41,256 @@ GPIOManager* GPIOManager::instance = NULL;
 /**
  * Returns pointer to GPIOManager singleton instance
  */
-GPIOManager* GPIOManager::getInstance(){
-	if(instance == NULL){
-		instance = new GPIOManager();
-	}
+GPIOManager* GPIOManager::getInstance() {
+  if (instance == NULL) {
+    instance = new GPIOManager();
+  }
 
-	return instance;
+  return instance;
 }
 
 /**
  * Constructor
  */
-GPIOManager::GPIOManager() {}
+GPIOManager::GPIOManager() {
+}
 
 /**
  * On destruct clean all exported pins
  */
 GPIOManager::~GPIOManager() {
-	this->clean();
+  this->clean();
 }
 
 /**
  * Export pin (equivalent to i.e echo "68" > /sys/class/gpio/export)
  */
-int GPIOManager::exportPin(unsigned int gpio){
-	ofstream stream(SYSFS_GPIO_DIR "/export");
+int GPIOManager::exportPin(unsigned int gpio) {
+  std::ofstream stream(SYSFS_GPIO_DIR "/export");
 
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to export GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to export GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream << gpio;
-	stream.close();
+  stream << gpio;
+  stream.close();
 
-	this->exportedPins.push_back(gpio);
+  this->exportedPins.push_back(gpio);
 
-	return 0;
+  return 0;
 }
 
 /**
  * Unexport pin (equivalent to i.e echo "68" > /sys/class/gpio/unexport)
  */
-int GPIOManager::unexportPin(unsigned int gpio){
-	ofstream stream(SYSFS_GPIO_DIR "/unexport");
+int GPIOManager::unexportPin(unsigned int gpio) {
+  std::ofstream stream(SYSFS_GPIO_DIR "/unexport");
 
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to unexport GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to unexport GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream << gpio;
-	stream.close();
+  stream << gpio;
+  stream.close();
 
-	// Remove element from the list
-	this->exportedPins.erase(std::remove(this->exportedPins.begin(), this->exportedPins.end(), gpio), this->exportedPins.end());
+  // Remove element from the list
+  this->exportedPins.erase(
+      std::remove(this->exportedPins.begin(), this->exportedPins.end(), gpio),
+      this->exportedPins.end());
 
-	return 0;
+  return 0;
 }
 
 /**
  * Set direction (equivalent to i.e echo "in" > /sys/class/gpio68/direction)
  */
-int GPIOManager::setDirection(unsigned int gpio, DIRECTION direction){
-    char path[50];
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
+int GPIOManager::setDirection(unsigned int gpio, DIRECTION direction) {
+  char path[50];
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
 
-	ofstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to set direction GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ofstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr,
+            "OPERATION FAILED: Unable to set direction GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-    if (direction == OUTPUT){
-    	stream << "out";
-    }else{
-    	stream << "in";
-    }
+  if (direction == OUTPUT) {
+    stream << "out";
+  } else {
+    stream << "in";
+  }
 
-	stream.close();
+  stream.close();
 
-	return 0;
+  return 0;
 }
 
 /**
  * Get direction (equivalent to i.e cat /sys/class/gpio68/direction)
  */
-int GPIOManager::getDirection(unsigned int gpio){
-    char path[50], direction;
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
+int GPIOManager::getDirection(unsigned int gpio) {
+  char path[50], direction;
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/direction", gpio);
 
-	ifstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to get direction GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ifstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr,
+            "OPERATION FAILED: Unable to get direction GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream >> direction;
+  stream >> direction;
 
-	stream.close();
+  stream.close();
 
-	return (direction == 'i')? INPUT : OUTPUT;
+  return (direction == 'i') ? INPUT : OUTPUT;
 }
 
 /**
  * Set value (equivalent to i.e echo "1" > /sys/class/gpio68/value)
  */
-int GPIOManager::setValue(unsigned int gpio, PIN_VALUE value){
-    char path[50];
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/value", gpio);
+int GPIOManager::setValue(unsigned int gpio, PIN_VALUE value) {
+  char path[50];
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
-	ofstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to set value GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ofstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to set value GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream << value;
-	stream.close();
+  stream << value;
+  stream.close();
 
-	return 0;
+  return 0;
 }
 
 /**
  * Get value (equivalent to i.e cat /sys/class/gpio68/value)
  */
-int GPIOManager::getValue(unsigned int gpio){
-    char path[50], value;
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/value", gpio);
+int GPIOManager::getValue(unsigned int gpio) {
+  char path[50], value;
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
-	ifstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ifstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream >> value;
-	stream.close();
+  stream >> value;
+  stream.close();
 
-	return (value == '1')? HIGH : LOW;
+  return (value == '1') ? HIGH : LOW;
 }
 
 /**
  * Set edge (equivalent to i.e echo "rising" > /sys/class/gpio68/edge)
  */
-int GPIOManager::setEdge(unsigned int gpio, EDGE_VALUE value){
-    char path[50];
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/edge", gpio);
+int GPIOManager::setEdge(unsigned int gpio, EDGE_VALUE value) {
+  char path[50];
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
 
-	ofstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to set edge GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ofstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to set edge GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream << GPIOConst::getInstance()->getEdgeValueByIndex(value);
-	stream.close();
+  stream << GPIOConst::getInstance()->getEdgeValueByIndex(value);
+  stream.close();
 
-	return 0;
+  return 0;
 }
 
 /**
  * Get edge (equivalent to i.e cat /sys/class/gpio68/edge)
  */
-int GPIOManager::getEdge(unsigned int gpio){
-    char path[50], value[7];
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/edge", gpio);
+int GPIOManager::getEdge(unsigned int gpio) {
+  char path[50], value[7];
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
 
-	ifstream stream(path);
-	if (stream < 0){
-		fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s", gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
-		return -1;
-	}
+  std::ifstream stream(path);
+  if (stream < 0) {
+    fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %d key: %s",
+            gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
+    return -1;
+  }
 
-	stream >> value;
-	stream.close();
+  stream >> value;
+  stream.close();
 
-	return GPIOConst::getInstance()->getEdgeIndexByValue(value);
+  return GPIOConst::getInstance()->getEdgeIndexByValue(value);
 }
 
 /**
  * Wait for edge event
  */
-int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value){
-    char path[50], buf;
-	int efd, fd, n;
-	struct epoll_event events, ev;
+int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value) {
+  char path[50], buf;
+  int efd, fd, n;
+  struct epoll_event events, ev;
 
-    snprintf(path, sizeof(path), SYSFS_GPIO_DIR  "/gpio%d/value", gpio);
+  snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
-    this->exportPin(gpio);
-    this->setDirection(gpio, INPUT);
-    this->setEdge(gpio, value);
+  this->exportPin(gpio);
+  this->setDirection(gpio, INPUT);
+  this->setEdge(gpio, value);
 
-    // Get value file descriptor
-    fd = open(path, O_RDONLY | O_NONBLOCK);
+  // Get value file descriptor
+  fd = open(path, O_RDONLY | O_NONBLOCK);
 
-	// Create epoll instance
-	efd = epoll_create(1);
+  // Create epoll instance
+  efd = epoll_create(1);
 
-	// Fill the event structure and register
-	ev.data.fd = fd;
-	ev.events = EPOLLIN | EPOLLET | EPOLLPRI;
+  // Fill the event structure and register
+  ev.data.fd = fd;
+  ev.events = EPOLLIN | EPOLLET | EPOLLPRI;
 
-	epoll_ctl (efd, EPOLL_CTL_ADD, fd, &ev);
+  epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ev);
 
-	// Ignore the first read (initial value)
-	for (int i = 0; i < 2; i++){
-		if ((n = epoll_wait(efd, &events, 1, -1)) == -1){
-			return -1;
-		}
-	}
+  // Ignore the first read (initial value)
+  for (int i = 0; i < 2; i++) {
+    if ((n = epoll_wait(efd, &events, 1, -1)) == -1) {
+      return -1;
+    }
+  }
 
-	lseek(events.data.fd, 0, SEEK_SET);
-	if (read(events.data.fd, &buf, sizeof(buf)) != 1){
-		return -1;
-	}
+  lseek(events.data.fd, 0, SEEK_SET);
+  if (read(events.data.fd, &buf, sizeof(buf)) != 1) {
+    return -1;
+  }
 
-	close(efd);
-	close(fd);
+  close(efd);
+  close(fd);
 
-    return 0;
+  return 0;
 }
 
 /**
  * Count already exported pins
  */
-int GPIOManager::countExportedPins(){
-	return this->exportedPins.size();
+int GPIOManager::countExportedPins() {
+  return this->exportedPins.size();
 }
 
 /**
  * Unexport all of already exported pins
  */
-void GPIOManager::clean(){
-	for(int i = 0; i < (int) this->exportedPins.size(); i++){
-		this->unexportPin(this->exportedPins[i]);
-	}
+void GPIOManager::clean() {
+  for (int i = 0; i < static_cast<int>(this->exportedPins.size()); i++) {
+    this->unexportPin(this->exportedPins[i]);
+  }
 }
 
 } /* namespace GPIO */

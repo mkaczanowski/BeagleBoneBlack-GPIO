@@ -19,21 +19,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
-*/
+ */
 
 #include <iostream>
 #include "GPIO/GPIOManager.h"
 #include "GPIO/GPIOConst.h"
 
-using namespace GPIO;
-
 int main() {
+  GPIO::GPIOManager* gp = GPIO::GPIOManager::getInstance();
+  int pin = GPIO::GPIOConst::getInstance()->getGpioByKey("P8_10");
 
-	GPIOManager* gp = GPIOManager::getInstance();
-	int pin = GPIOConst::getInstance()->getGpioByKey("P8_10");
+  gp->waitForEdge(pin, GPIO::RISING);
+  gp->~GPIOManager();
 
-	gp->waitForEdge(pin, GPIO::RISING);
-	gp->~GPIOManager();
-
-	return 0;
+  return 0;
 }
