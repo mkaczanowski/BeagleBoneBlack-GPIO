@@ -26,3 +26,6 @@ Simple C++ library that handles GPIO calls for BeagleBone Black
  
 3. Export/unexport sanity check
 4. Table with pins being exported by default
+
+### Compilation
+g++ GPIO/GPIOConst.cpp GPIO/GPIOManager.cpp BeagleBoneBlack-GPIO.cpp -o example
