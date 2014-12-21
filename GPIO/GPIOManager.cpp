@@ -243,9 +243,10 @@ int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value) {
 
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
-  this->exportPin(gpio);
-  this->setDirection(gpio, INPUT);
-  this->setEdge(gpio, value);
+  //The following lines were commented out for more efficient polling
+  //this->exportPin(gpio);
+  //this->setDirection(gpio, INPUT);
+  //this->setEdge(gpio, value);
 
   // Get value file descriptor
   fd = open(path, O_RDONLY | O_NONBLOCK);
