@@ -14,12 +14,12 @@ Simple C++ library that handles GPIO calls for BeagleBone Black
 2. Easy operations on gpio sysfs descriptors:
  - GPIOManager::exportPin - Export pin (equivalent to i.e echo "68" > /sys/class/gpio/export)
  - GPIOManager::unexportPin - Unexport pin (equivalent to i.e echo "68" > /sys/class/gpio/unexport)
- - GPIOManager::setDirection - Set direction (equivalent to i.e echo "in" > /sys/class/gpio68/direction)
- - GPIOManager::getDirection - Get direction (equivalent to i.e cat /sys/class/gpio68/direction)
- - GPIOManager::setValue - Set value (equivalent to i.e echo "1" > /sys/class/gpio68/value)
- - GPIOManager::getValue - Get value (equivalent to i.e cat /sys/class/gpio68/value)
- - GPIOManager::setEdge - Set edge (equivalent to i.e echo "rising" > /sys/class/gpio68/edge)
- - GPIOManager::getEdge - Get edge (equivalent to i.e cat /sys/class/gpio68/edge)
+ - GPIOManager::setDirection - Set direction (equivalent to i.e echo "in" > /sys/class/gpio/gpio68/direction)
+ - GPIOManager::getDirection - Get direction (equivalent to i.e cat /sys/class/gpio/gpio68/direction)
+ - GPIOManager::setValue - Set value (equivalent to i.e echo "1" > /sys/class/gpio/gpio68/value)
+ - GPIOManager::getValue - Get value (equivalent to i.e cat /sys/class/gpio/gpio68/value)
+ - GPIOManager::setEdge - Set edge (equivalent to i.e echo "rising" > /sys/class/gpio/gpio68/edge)
+ - GPIOManager::getEdge - Get edge (equivalent to i.e cat /sys/class/gpio/gpio68/edge)
  - GPIOManager::waitForEdge - Wait for edge event
  - GPIOManager::countExportedPins - Count already exported pins
  - GPIOManager::clean - Unexport all of already exported pins
