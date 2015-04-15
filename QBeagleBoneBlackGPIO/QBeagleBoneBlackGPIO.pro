@@ -12,13 +12,13 @@ TEMPLATE = lib
 DEFINES += QBEAGLEBONEBLACKGPIO_LIBRARY
 
 SOURCES += \
-    ../../GPIO/GPIOConst.cpp \
-    ../../GPIO/GPIOManager.cpp
+    ../GPIO/GPIOConst.cpp \
+    ../GPIO/GPIOManager.cpp
 
 HEADERS +=\
         qbeagleboneblackgpio_global.h \
-    ../../GPIO/GPIOConst.h \
-    ../../GPIO/GPIOManager.h
+    ../GPIO/GPIOConst.h \
+    ../GPIO/GPIOManager.h
 
 unix {
     target.path = /usr/lib
