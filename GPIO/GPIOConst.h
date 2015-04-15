@@ -32,6 +32,10 @@
 #ifndef BEAGLEBONEBLACK_GPIO_SRC_GPIO_GPIOCONST_H_
 #define BEAGLEBONEBLACK_GPIO_SRC_GPIO_GPIOCONST_H_
 
+#ifdef QBEAGLEBONEBLACKGPIO_LIBRARY
+    #include <qbeagleboneblackgpio_global.h>
+#endif
+
 namespace GPIO {
 
 typedef struct pins_t {
@@ -43,7 +47,12 @@ typedef struct pins_t {
   int isAllocatedByDefault;
 } pins_t;
 
-class GPIOConst {
+class
+        #ifdef QBEAGLEBONEBLACKGPIO_LIBRARY
+        QBEAGLEBONEBLACKGPIOSHARED_EXPORT
+        #endif
+
+        GPIOConst {
  public:
   GPIOConst();
   virtual ~GPIOConst();
