@@ -41,8 +41,10 @@ GPIOManager* GPIOManager::instance = NULL;
 /**
  * Returns pointer to GPIOManager singleton instance
  */
+
 GPIOManager* GPIOManager::getInstance() {
   if (instance == NULL) {
+
     instance = new GPIOManager();
   }
 
@@ -65,6 +67,7 @@ GPIOManager::~GPIOManager() {
 /**
  * Export pin (equivalent to i.e echo "68" > /sys/class/gpio/export)
  */
+
 int GPIOManager::exportPin(unsigned int gpio) {
   std::ofstream stream(SYSFS_GPIO_DIR "/export");
 
