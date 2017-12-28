@@ -71,7 +71,7 @@ GPIOManager::~GPIOManager() {
 int GPIOManager::exportPin(unsigned int gpio) {
   std::ofstream stream(SYSFS_GPIO_DIR "/export");
 
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to export GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
@@ -91,7 +91,7 @@ int GPIOManager::exportPin(unsigned int gpio) {
 int GPIOManager::unexportPin(unsigned int gpio) {
   std::ofstream stream(SYSFS_GPIO_DIR "/unexport");
 
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to unexport GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
@@ -116,7 +116,7 @@ int GPIOManager::setDirection(unsigned int gpio, DIRECTION direction) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/direction", gpio);
 
   std::ofstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr,
             "OPERATION FAILED: Unable to set direction GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
@@ -142,7 +142,7 @@ int GPIOManager::getDirection(unsigned int gpio) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/direction", gpio);
 
   std::ifstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr,
             "OPERATION FAILED: Unable to get direction GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
@@ -164,7 +164,7 @@ int GPIOManager::setValue(unsigned int gpio, PIN_VALUE value) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
   std::ofstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to set value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
@@ -184,7 +184,7 @@ int GPIOManager::getValue(unsigned int gpio) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/value", gpio);
 
   std::ifstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
@@ -204,7 +204,7 @@ int GPIOManager::setEdge(unsigned int gpio, EDGE_VALUE value) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
 
   std::ofstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to set edge GPIO no. %d key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
@@ -224,7 +224,7 @@ int GPIOManager::getEdge(unsigned int gpio) {
   snprintf(path, sizeof(path), SYSFS_GPIO_DIR "/gpio%u/edge", gpio);
 
   std::ifstream stream(path);
-  if (stream < 0) {
+  if (!stream) {
     fprintf(stderr, "OPERATION FAILED: Unable to get value GPIO no. %u key: %s",
             gpio, GPIOConst::getInstance()->getGpioKeyByPin(gpio));
     return -1;
