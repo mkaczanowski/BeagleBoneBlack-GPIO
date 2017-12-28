@@ -278,7 +278,7 @@ int GPIOManager::waitForEdge(unsigned int gpio, EDGE_VALUE value) {
   close(efd);
   close(fd);
 
-  return 0;
+  return (buf & 1);
 }
 
 /**
