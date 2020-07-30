@@ -1,3 +1,8 @@
+[![Build Status][travis-badge]][travis]
+
+[travis-badge]: https://travis-ci.org/mkaczanowski/BeagleBoneBlack-GPIO.svg?branch=master
+[travis]: https://travis-ci.org/mkaczanowski/BeagleBoneBlack-GPIO/
+
 # BeagleBoneBlack-GPIO
 
 The library is a convenient manager for BeagleBone Black GPIO pins. In a nutshell it:
