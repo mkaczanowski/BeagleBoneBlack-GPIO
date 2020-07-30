@@ -3,6 +3,4 @@ dist: bionic
 compiler: clang
 
 script: 
-  - ls -la .
-  - pwd
   - clang++ -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp
