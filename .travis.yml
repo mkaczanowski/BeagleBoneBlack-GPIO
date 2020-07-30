@@ -1,0 +1,7 @@
+language: c
+
+compiler:
+  - gcc
+
+script: 
+  - g++ -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp -o example
