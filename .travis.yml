@@ -4,4 +4,6 @@ compiler:
   - gcc
 
 script: 
+  - ls -la .
+  - pwd
   - g++ -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp -o example
