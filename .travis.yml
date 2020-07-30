@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
     - clang-10
+    - libstdc++-8-dev
 
 script: 
-  - clang++-10 -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp
+  - clang++-10 -std=c++17 gpio/*.cpp gpio/*.h main.cpp -lstdc++fs
