@@ -1,7 +1,6 @@
-language: c
-
-compiler:
-  - gcc
+language: cpp
+dist: bionic
+compiler: gcc
 
 script: 
   - ls -la .
