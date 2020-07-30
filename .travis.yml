@@ -2,8 +2,10 @@ language: cpp
 dist: bionic
 compiler: clang
 
-packages:
-  - clang-10
+addons:
+  apt:
+    packages:
+    - clang-10
 
 script: 
   - clang++-10 -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp
