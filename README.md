@@ -14,6 +14,8 @@ The library is a convenient manager for BeagleBone Black GPIO pins. In a nutshel
 
 ## Example
 ```
+#compiled under BeagleBone(target) environment
+#if compiled under VM(host) environment, changed "g++" to "g++-arm-linux-gnueabihf" to cross compile
 g++ -std=c++17 -lstdc++fs gpio/*.cpp gpio/*.h main.cpp -o example
 ```
 
